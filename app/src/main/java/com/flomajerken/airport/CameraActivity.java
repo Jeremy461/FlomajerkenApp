@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,16 +55,22 @@ public class CameraActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent sensorEvent) {
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                    if(sensorEvent.values[1] > 0){
+                    if(sensorEvent.values[1] > 0.5){
                         tv_gyro.setText("Down");
                     }
-                    else if(sensorEvent.values[1] < 0){
+                    else if(sensorEvent.values[1] < -0.5){
                         tv_gyro.setText("Up");
                     }
                 }
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
-                    Log.d(LOG_TAG, Float.toString(sensorEvent.values[0]));
+                    Log.d(LOG_TAG, Float.toString(sensorEvent.values[1]));
+                    if(sensorEvent.values[1] > 0){
+                        rotateLine(-sensorEvent.values[1]);
+                    }
+                    else if(sensorEvent.values[1] < 0){
+                        rotateLine(-sensorEvent.values[1]);
+                    }
                 }
             }
 
@@ -85,6 +92,8 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+
+
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -94,6 +103,12 @@ public class CameraActivity extends AppCompatActivity {
             // no camera on this device
             return false;
         }
+    }
+
+    /** Rotate horizontal line */
+    public void rotateLine(Float angle){
+        View imageView = findViewById(R.id.line);
+        imageView.setRotation(angle *(Float.valueOf("9.1836")));
     }
 
     /** A safe way to get an instance of the Camera object. */
