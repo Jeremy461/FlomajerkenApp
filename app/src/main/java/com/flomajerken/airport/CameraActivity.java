@@ -23,10 +23,12 @@ public class CameraActivity extends AppCompatActivity {
     private Camera mCamera;
     private CameraPreview mPreview;
 
+    //Sensor shit
     private SensorManager sensorManager;
     private Sensor gyroscope;
-    private SensorEventListener gyroscopeEventListener;
-    
+    private Sensor gravity;
+    private SensorEventListener sensorListener;
+
     private TextView tv_gyro;
 
     @Override
@@ -38,24 +40,30 @@ public class CameraActivity extends AppCompatActivity {
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
 
-
-        if(gyroscope == null){
-            Toast.makeText(this, "Your device has no gyroscope.", Toast.LENGTH_SHORT).show();
+        if(gyroscope == null || gravity == null){
+            Toast.makeText(this, "Your device doesn't have the required sensors for this app.", Toast.LENGTH_SHORT).show();
             finish();
         }
 
-        gyroscopeEventListener = new SensorEventListener() {
+        sensorListener = new SensorEventListener() {
+
+            //Opvangen van sensor data
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if(sensorEvent.values[1] > 0.5f){
-                    height = sensorEvent.values[1];
-                    Log.d(LOG_TAG, "Voor");
-                    tv_gyro.setText("Down");
+
+                if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+                    if(sensorEvent.values[1] > 0){
+                        tv_gyro.setText("Down");
+                    }
+                    else if(sensorEvent.values[1] < 0){
+                        tv_gyro.setText("Up");
+                    }
                 }
-                else if(sensorEvent.values[1] < -0.5f){
-                    Log.d(LOG_TAG, "Achter");
-                    tv_gyro.setText("Up");
+
+                if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
+                    Log.d(LOG_TAG, Float.toString(sensorEvent.values[0]));
                 }
             }
 
@@ -105,12 +113,13 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(gyroscopeEventListener, gyroscope, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorListener, gyroscope, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorListener, gravity, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        sensorManager.unregisterListener(gyroscopeEventListener);
+        sensorManager.unregisterListener(sensorListener);
     }
 }
