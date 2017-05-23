@@ -27,10 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="-100dp"
-            android:layout_marginRight="-100dp"
             android:adjustViewBounds="false"
-            android:scaleType="center"
             app:srcCompat="@drawable/hud_line" />
     </FrameLayout>
 
@@ -38,10 +35,10 @@
         android:id="@+id/iv_cockpit"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        app:srcCompat="@drawable/cockpit_2"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_weight="1"
+        app:srcCompat="@drawable/cockpit_2" />
 
     <TextView
         android:id="@+id/tv_gyro"

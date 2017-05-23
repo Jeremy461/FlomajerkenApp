@@ -55,28 +55,27 @@ public class CameraActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent sensorEvent) {
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                    if(sensorEvent.values[1] > 0.5){
+                    if(sensorEvent.values[1] > 0.5f){
                         tv_gyro.setText("Down");
                     }
-                    else if(sensorEvent.values[1] < -0.5){
+                    else if(sensorEvent.values[1] < -0.5f){
                         tv_gyro.setText("Up");
                     }
                 }
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
                     Log.d(LOG_TAG, Float.toString(sensorEvent.values[1]));
-                    if(sensorEvent.values[1] > 0){
-                        rotateLine(-sensorEvent.values[1]);
+                    if(sensorEvent.values[1] > 0f){
+                        rotateLine(-sensorEvent.values[1] / 1.5f);
                     }
-                    else if(sensorEvent.values[1] < 0){
-                        rotateLine(-sensorEvent.values[1]);
+                    else if(sensorEvent.values[1] < 0f){
+                        rotateLine(-sensorEvent.values[1] / 1.5f);
                     }
                 }
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
             }
         };
 
@@ -108,7 +107,7 @@ public class CameraActivity extends AppCompatActivity {
     /** Rotate horizontal line */
     public void rotateLine(Float angle){
         View imageView = findViewById(R.id.line);
-        imageView.setRotation(angle *(Float.valueOf("9.1836")));
+        imageView.setRotation(angle * (9f));
     }
 
     /** A safe way to get an instance of the Camera object. */
