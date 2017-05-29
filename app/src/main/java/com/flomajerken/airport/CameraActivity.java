@@ -30,6 +30,9 @@ public class CameraActivity extends AppCompatActivity {
     private Sensor gravity;
     private SensorEventListener sensorListener;
 
+    private boolean verticalDirection;
+    private boolean gravityMiddle = false;
+    private float altitude = 1000;
     private TextView tv_gyro;
 
     @Override
@@ -55,16 +58,38 @@ public class CameraActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent sensorEvent) {
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                    if(sensorEvent.values[1] > 0.5f){
-                        tv_gyro.setText("Down");
-                    }
-                    else if(sensorEvent.values[1] < -0.5f){
-                        tv_gyro.setText("Up");
+                    if(gravityMiddle){
+                        if(sensorEvent.values[1] > 0.5f){
+                            tv_gyro.setText("Down");
+                            verticalDirection = false;
+                        }
+                        else if(sensorEvent.values[1] < -0.5f){
+                            tv_gyro.setText("Up");
+                            verticalDirection = true;
+                        }
                     }
                 }
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
-                    Log.d(LOG_TAG, Float.toString(sensorEvent.values[1]));
+                Log.d(LOG_TAG, Float.toString(altitude));
+                    if(sensorEvent.values[0] > 9.5f){
+                        gravityMiddle = true;
+                    } else {
+                        gravityMiddle = false;
+                    }
+
+                    if(verticalDirection){
+                        altitude = altitude + (10 - sensorEvent.values[0]);
+                    } else {
+                        altitude = altitude - (10 - sensorEvent.values[0]);
+                    }
+
+                    if(altitude <= 0){
+                        tv_gyro.setText("Crashed");
+                    } else if(altitude >= 2000) {
+                        tv_gyro.setText("In space");
+                    }
+
                     if(sensorEvent.values[1] > 0f){
                         rotateLine(-sensorEvent.values[1] / 1.5f);
                     }
