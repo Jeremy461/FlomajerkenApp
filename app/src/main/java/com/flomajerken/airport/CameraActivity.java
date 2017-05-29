@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,15 +33,13 @@ public class CameraActivity extends AppCompatActivity {
 
     private boolean verticalDirection;
     private boolean gravityMiddle = false;
-    private float altitude = 1000;
-    private TextView tv_gyro;
+    private float altitude = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
-        tv_gyro = (TextView) findViewById(R.id.tv_gyro);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -57,38 +56,40 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
 
-                if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-                    if(gravityMiddle){
-                        if(sensorEvent.values[1] > 0.5f){
-                            tv_gyro.setText("Down");
-                            verticalDirection = false;
-                        }
-                        else if(sensorEvent.values[1] < -0.5f){
-                            tv_gyro.setText("Up");
-                            verticalDirection = true;
-                        }
-                    }
-                }
-
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
-                Log.d(LOG_TAG, Float.toString(altitude));
-                    if(sensorEvent.values[0] > 9.5f){
+                    if(sensorEvent.values[2] > 9.5f){
                         gravityMiddle = true;
                     } else {
                         gravityMiddle = false;
                     }
 
-                    if(verticalDirection){
-                        altitude = altitude + (10 - sensorEvent.values[0]);
-                    } else {
-                        altitude = altitude - (10 - sensorEvent.values[0]);
+                    altitude = altitude - (0.4f * sensorEvent.values[2]);
+
+                    if(altitude > 55){
+                        altitude = 55;
+                    } else if(altitude < -55){
+                        altitude = -55;
                     }
 
-                    if(altitude <= 0){
-                        tv_gyro.setText("Crashed");
-                    } else if(altitude >= 2000) {
-                        tv_gyro.setText("In space");
+                    if(altitude > 50){
+                        ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
+                        img.setImageResource(R.drawable.cockpit_bg_frozen);
+                        ImageView line = (ImageView) findViewById(R.id.line);
+                        line.setVisibility(View.INVISIBLE);
+                    } else if(altitude < -50){
+                        ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
+                        img.setImageResource(R.drawable.cockpit_bg_cracks);
+                        ImageView line = (ImageView) findViewById(R.id.line);
+                        line.setVisibility(View.INVISIBLE);
+                    } else {
+                        ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
+                        img.setImageResource(R.drawable.cockpit_2);
+                        ImageView line = (ImageView) findViewById(R.id.line);
+                        line.setVisibility(View.VISIBLE);
                     }
+
+                    View imageView = findViewById(R.id.heightIndicator);
+                    imageView.setTranslationY(-altitude);
 
                     if(sensorEvent.values[1] > 0f){
                         rotateLine(-sensorEvent.values[1] / 1.5f);
