@@ -35,7 +35,6 @@ public class CameraActivity extends AppCompatActivity {
     private boolean gravityMiddle = false;
     private float altitude = 0;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +54,7 @@ public class CameraActivity extends AppCompatActivity {
             //Opvangen van sensor data
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
+                ImageView line = (ImageView) findViewById(R.id.line);
 
                 if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
                     if(sensorEvent.values[2] > 9.5f){
@@ -74,17 +74,14 @@ public class CameraActivity extends AppCompatActivity {
                     if(altitude > 50){
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_bg_frozen);
-                        ImageView line = (ImageView) findViewById(R.id.line);
                         line.setVisibility(View.INVISIBLE);
                     } else if(altitude < -50){
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_bg_cracks);
-                        ImageView line = (ImageView) findViewById(R.id.line);
                         line.setVisibility(View.INVISIBLE);
                     } else {
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_2);
-                        ImageView line = (ImageView) findViewById(R.id.line);
                         line.setVisibility(View.VISIBLE);
                     }
 
