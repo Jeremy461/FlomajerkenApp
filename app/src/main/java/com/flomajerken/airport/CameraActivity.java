@@ -94,10 +94,10 @@ public class CameraActivity extends AppCompatActivity {
                     imageView.setTranslationY(-altitude);
 
                     if(sensorEvent.values[1] > 0f){
-                        rotateLine(-sensorEvent.values[1] / 1.5f);
+                        rotate((-sensorEvent.values[1] / 1.5f) * 9f, findViewById(R.id.line));
                     }
                     else if(sensorEvent.values[1] < 0f){
-                        rotateLine(-sensorEvent.values[1] / 1.5f);
+                        rotate((-sensorEvent.values[1] / 1.5f) * 9f, findViewById(R.id.line));
                     }
                 }
 
@@ -107,6 +107,8 @@ public class CameraActivity extends AppCompatActivity {
                     // get the azimuth value (orientation[0]) in degree
                     mAzimuth = (int) ( Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
                     Log.d(LOG_TAG, mAzimuth + "");
+
+                    rotate(mAzimuth, findViewById(iv_cockpit_radar_marker));
                 }
             }
 
@@ -141,9 +143,8 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     /** Rotate horizontal line */
-    public void rotateLine(Float angle){
-        View imageView = findViewById(R.id.line);
-        imageView.setRotation(angle * (9f));
+    public void rotate(Float angle, View view){
+        view.setRotation(angle);
     }
 
     /** A safe way to get an instance of the Camera object. */
