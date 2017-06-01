@@ -34,6 +34,7 @@ public class CameraActivity extends AppCompatActivity {
     private boolean verticalDirection;
     private boolean gravityMiddle = false;
     private float altitude = 0;
+    private float radarRotation = 0;
 
     private int mAzimuth = 0;
 
@@ -108,8 +109,11 @@ public class CameraActivity extends AppCompatActivity {
                     mAzimuth = (int) ( Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
                     Log.d(LOG_TAG, mAzimuth + "");
 
-                    rotate(mAzimuth, findViewById(iv_cockpit_radar_marker));
+                    rotate( (float) -mAzimuth, findViewById(R.id.iv_cockpit_radar_marker));
                 }
+
+                rotate(-radarRotation, findViewById(R.id.iv_cockpit_radar_line));
+                radarRotation++;
             }
 
             @Override

@@ -97,12 +97,6 @@
             android:layout_marginTop="226dp" />
 
         <ImageView
-            android:id="@+id/iv_cockpit_radar_los"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/cockpit_radar_line-of-sight" />
-
-        <ImageView
             android:id="@+id/iv_cockpit_radar_marker"
             android:layout_width="300dp"
             android:layout_height="300dp"
@@ -114,6 +108,18 @@
             android:layout_marginLeft="0dp"
             app:layout_constraintLeft_toLeftOf="@+id/iv_cockpit_radar"
             app:layout_constraintHorizontal_bias="0.076" />
+
+        <ImageView
+            android:id="@+id/iv_cockpit_radar_line"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="0dp"
+            app:layout_constraintLeft_toLeftOf="@+id/iv_cockpit_radar_marker"
+            app:layout_constraintRight_toRightOf="@+id/iv_cockpit_radar_marker"
+            app:layout_constraintTop_toTopOf="@+id/iv_cockpit_radar_marker"
+            app:srcCompat="@drawable/cockpit_radar_scanner" />
     </android.support.constraint.ConstraintLayout>
 
 </RelativeLayout>
