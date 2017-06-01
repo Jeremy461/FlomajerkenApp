@@ -27,13 +27,15 @@ public class CameraActivity extends AppCompatActivity {
 
     //Sensor shit
     private SensorManager sensorManager;
-    private Sensor gyroscope;
     private Sensor gravity;
+    private Sensor rotation;
     private SensorEventListener sensorListener;
 
     private boolean verticalDirection;
     private boolean gravityMiddle = false;
     private float altitude = 0;
+
+    private int mAzimuth = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,15 +43,18 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        rotation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
-        if(gyroscope == null || gravity == null){
+        if(rotation == null || gravity == null){
             Toast.makeText(this, "Your device doesn't have the required sensors for this app.", Toast.LENGTH_SHORT).show();
             finish();
         }
 
         sensorListener = new SensorEventListener() {
+
+            float[] orientation = new float[3];
+            float[] rMat = new float[9];
 
             //Opvangen van sensor data
             @Override
@@ -94,6 +99,14 @@ public class CameraActivity extends AppCompatActivity {
                     else if(sensorEvent.values[1] < 0f){
                         rotateLine(-sensorEvent.values[1] / 1.5f);
                     }
+                }
+
+                if( sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR ){
+                    // calculate th rotation matrix
+                    SensorManager.getRotationMatrixFromVector( rMat, sensorEvent.values );
+                    // get the azimuth value (orientation[0]) in degree
+                    mAzimuth = (int) ( Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
+                    Log.d(LOG_TAG, mAzimuth + "");
                 }
             }
 
@@ -150,8 +163,8 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        sensorManager.registerListener(sensorListener, gyroscope, SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(sensorListener, gravity, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorListener, rotation, SensorManager.SENSOR_DELAY_GAME);
     }
 
     @Override
