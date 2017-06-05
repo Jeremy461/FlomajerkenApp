@@ -113,6 +113,7 @@ public class CameraActivity extends AppCompatActivity {
                 }
 
                 rotate(-radarRotation, findViewById(R.id.iv_cockpit_radar_line));
+                rotate( (float) mAzimuth, findViewById(R.id.iv_cockpit_radar));
                 radarRotation++;
             }
 
