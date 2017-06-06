@@ -35,8 +35,11 @@ public class CameraActivity extends AppCompatActivity {
     private boolean gravityMiddle = false;
     private float altitude = 0;
     private float radarRotation = 0;
+    private float crateSpawn;
+    private float spawnLocation = (int) Math.ceil(Math.random() * 180);
 
     private int mAzimuth = 0;
+    private ImageView crate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,13 +110,53 @@ public class CameraActivity extends AppCompatActivity {
                     SensorManager.getRotationMatrixFromVector( rMat, sensorEvent.values );
                     // get the azimuth value (orientation[0]) in degree
                     mAzimuth = (int) ( Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
-                    Log.d(LOG_TAG, mAzimuth + "");
 
                     rotate( (float) -mAzimuth, findViewById(R.id.iv_cockpit_radar_marker));
+
+                    View crate = findViewById(R.id.crate);
+//                    if(mAzimuth >= spawnLocation && mAzimuth <= 180 + spawnLocation) {
+//                        crate.setTranslationX(-mAzimuth * 15 + spawnLocation);
+//                    } else if(mAzimuth > 180 + spawnLocation && mAzimuth <= 360 || mAzimuth < 50) {
+//                        crate.setTranslationX((mAzimuth - 360 + spawnLocation) * -15);
+//                    }
+
+                    if(mAzimuth >= 0 && mAzimuth <= 180) {
+                        crate.setTranslationX(-mAzimuth * 15);
+                    } else if(mAzimuth > 180 && mAzimuth <= 360) {
+                        crate.setTranslationX((mAzimuth - 360) * -15);
+                    }
+                    Log.d(LOG_TAG, crate.getTranslationX() + "");
+
+//                    Log.d(LOG_TAG, mAzimuth +"");
+//                    Log.d(LOG_TAG, spawnLocation +"");
+
+                }
+
+                crateSpawn = (int) Math.ceil(Math.random() * 100);
+
+                crate = (ImageView)findViewById(R.id.crate);
+
+                crate.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+
+                        crate.setVisibility(View.INVISIBLE);
+                        View radarMarker = findViewById(R.id.iv_cockpit_radar_marker);
+                        radarMarker.setVisibility(View.INVISIBLE);
+
+                    }
+                });
+
+                if(crateSpawn == 1){
+
+                    crate.setVisibility(View.VISIBLE);
+                    View radarMarker = findViewById(R.id.iv_cockpit_radar_marker);
+                    radarMarker.setVisibility(View.VISIBLE);
                 }
 
                 rotate(-radarRotation, findViewById(R.id.iv_cockpit_radar_line));
-                rotate( (float) mAzimuth, findViewById(R.id.iv_cockpit_radar));
+                rotate( (float) -mAzimuth, findViewById(R.id.iv_cockpit_radar));
                 radarRotation++;
             }
 

@@ -21,6 +21,17 @@
         android:layout_height="match_parent">
 
         <ImageView
+            android:id="@+id/crate"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_marginLeft="231dp"
+            android:layout_marginTop="62dp"
+            android:visibility="invisible"
+            app:layout_constraintLeft_toLeftOf="@+id/iv_cockpit"
+            app:layout_constraintTop_toTopOf="@+id/iv_cockpit"
+            app:srcCompat="@drawable/cockpit_crate" />
+
+        <ImageView
             android:id="@+id/line"
             android:layout_width="0dp"
             android:layout_height="368dp"
@@ -100,14 +111,15 @@
             android:id="@+id/iv_cockpit_radar_marker"
             android:layout_width="300dp"
             android:layout_height="300dp"
-            android:layout_marginTop="0dp"
-            app:layout_constraintTop_toTopOf="@+id/iv_cockpit_radar"
-            app:srcCompat="@drawable/cockpit_radar_marker"
-            android:layout_marginRight="0dp"
-            app:layout_constraintRight_toRightOf="@+id/iv_cockpit_radar"
             android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:visibility="invisible"
+            app:layout_constraintHorizontal_bias="0.076"
             app:layout_constraintLeft_toLeftOf="@+id/iv_cockpit_radar"
-            app:layout_constraintHorizontal_bias="0.076" />
+            app:layout_constraintRight_toRightOf="@+id/iv_cockpit_radar"
+            app:layout_constraintTop_toTopOf="@+id/iv_cockpit_radar"
+            app:srcCompat="@drawable/cockpit_radar_marker" />
 
         <ImageView
             android:id="@+id/iv_cockpit_radar_line"
@@ -120,6 +132,7 @@
             app:layout_constraintRight_toRightOf="@+id/iv_cockpit_radar_marker"
             app:layout_constraintTop_toTopOf="@+id/iv_cockpit_radar_marker"
             app:srcCompat="@drawable/cockpit_radar_scanner" />
+
     </android.support.constraint.ConstraintLayout>
 
 </RelativeLayout>
