@@ -127,7 +127,7 @@ public class CameraActivity extends AppCompatActivity {
 
                 }
 
-                crateSpawn = (int) Math.ceil(Math.random() * 100);
+                crateSpawn = (int) Math.ceil(Math.random() * 1000);
 
                 crate = (ImageView)findViewById(R.id.crate);
 
