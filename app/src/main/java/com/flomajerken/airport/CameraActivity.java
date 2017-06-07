@@ -36,7 +36,7 @@ public class CameraActivity extends AppCompatActivity {
     private float altitude = 0;
     private float radarRotation = 0;
     private float crateSpawn;
-    private float spawnLocation = (int) Math.ceil(Math.random() * 180);
+    private float spawnLocation = (int) Math.ceil(Math.random() * 360);
 
     private int mAzimuth = 0;
     private ImageView crate;
@@ -114,19 +114,14 @@ public class CameraActivity extends AppCompatActivity {
                     rotate( (float) -mAzimuth, findViewById(R.id.iv_cockpit_radar_marker));
 
                     View crate = findViewById(R.id.crate);
-//                    if(mAzimuth >= spawnLocation && mAzimuth <= 180 + spawnLocation) {
-//                        crate.setTranslationX(-mAzimuth * 15 + spawnLocation);
-//                    } else if(mAzimuth > 180 + spawnLocation && mAzimuth <= 360 || mAzimuth < 50) {
-//                        crate.setTranslationX((mAzimuth - 360 + spawnLocation) * -15);
-//                    }
 
                     if(mAzimuth >= 0 && mAzimuth <= 180) {
-                        crate.setTranslationX(-mAzimuth * 15);
-                    } else if(mAzimuth > 180 && mAzimuth <= 360) {
-                        crate.setTranslationX((mAzimuth - 360) * -15);
+                        crate.setTranslationX((-mAzimuth) * 15);
+                    } else if(mAzimuth > 180 && mAzimuth < 360) {
+                        crate.setTranslationX((mAzimuth -360) * -15);
                     }
-                    Log.d(LOG_TAG, crate.getTranslationX() + "");
 
+                    Log.d(LOG_TAG, crate.getTranslationX()+ "");
 //                    Log.d(LOG_TAG, mAzimuth +"");
 //                    Log.d(LOG_TAG, spawnLocation +"");
 
@@ -145,6 +140,9 @@ public class CameraActivity extends AppCompatActivity {
                         View radarMarker = findViewById(R.id.iv_cockpit_radar_marker);
                         radarMarker.setVisibility(View.INVISIBLE);
 
+                        View crateCarry = findViewById(R.id.crateCarry);
+                        crateCarry.setVisibility(View.VISIBLE);
+
                     }
                 });
 
@@ -153,6 +151,9 @@ public class CameraActivity extends AppCompatActivity {
                     crate.setVisibility(View.VISIBLE);
                     View radarMarker = findViewById(R.id.iv_cockpit_radar_marker);
                     radarMarker.setVisibility(View.VISIBLE);
+
+                    View crateCarry = findViewById(R.id.crateCarry);
+                    crateCarry.setVisibility(View.INVISIBLE);
                 }
 
                 rotate(-radarRotation, findViewById(R.id.iv_cockpit_radar_line));
