@@ -72,7 +72,7 @@ public class CameraActivity extends AppCompatActivity {
                         gravityMiddle = false;
                     }
 
-                    altitude = altitude - (0.4f * sensorEvent.values[2]);
+                    altitude = altitude - (0.3f * sensorEvent.values[2]);
 
                     if(altitude > 55){
                         altitude = 55;
@@ -84,10 +84,14 @@ public class CameraActivity extends AppCompatActivity {
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_bg_frozen);
                         line.setVisibility(View.INVISIBLE);
+                        View crateCarry = findViewById(R.id.crateCarry);
+                        crateCarry.setVisibility(View.INVISIBLE);
                     } else if(altitude < -50){
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_bg_cracks);
                         line.setVisibility(View.INVISIBLE);
+                        View crateCarry = findViewById(R.id.crateCarry);
+                        crateCarry.setVisibility(View.INVISIBLE);
                     } else {
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_2);
