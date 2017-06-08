@@ -72,7 +72,10 @@ public class CameraActivity extends AppCompatActivity {
                         gravityMiddle = false;
                     }
 
-                    altitude = altitude - (0.3f * sensorEvent.values[2]);
+                    altitude = altitude - (0.2f * (sensorEvent.values[2]-1));
+                    Log.d(LOG_TAG, sensorEvent.values[2] + "");
+
+
 
                     if(altitude > 55){
                         altitude = 55;
@@ -125,7 +128,7 @@ public class CameraActivity extends AppCompatActivity {
                         crate.setTranslationX((mAzimuth -360) * -15);
                     }
 
-                    Log.d(LOG_TAG, crate.getTranslationX()+ "");
+//                    Log.d(LOG_TAG, crate.getTranslationX()+ "");
 //                    Log.d(LOG_TAG, mAzimuth +"");
 //                    Log.d(LOG_TAG, spawnLocation +"");
 
