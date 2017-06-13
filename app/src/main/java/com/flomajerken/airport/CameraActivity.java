@@ -17,6 +17,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -35,11 +43,13 @@ public class CameraActivity extends AppCompatActivity {
     private boolean gravityMiddle = false;
     private float altitude = 0;
     private float radarRotation = 0;
-    private float crateSpawn;
+    private float crateSpawn = 1;
     private float spawnLocation = (int) Math.ceil(Math.random() * 360);
 
     private int mAzimuth = 0;
     private ImageView crate;
+
+    private final String url_now = "http://api.openweathermap.org/data/2.5/weather?q=Rotterdam&units=imperial&APPID=dfc773520361124b21a2723ee480b329";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +83,7 @@ public class CameraActivity extends AppCompatActivity {
                     }
 
                     altitude = altitude - (0.2f * (sensorEvent.values[2]-2));
-                    Log.d(LOG_TAG, sensorEvent.values[2] + "");
+//                    Log.d(LOG_TAG, sensorEvent.values[2] + "");
 
 
 
@@ -89,6 +99,7 @@ public class CameraActivity extends AppCompatActivity {
                         line.setVisibility(View.INVISIBLE);
                         View crateCarry = findViewById(R.id.crateCarry);
                         crateCarry.setVisibility(View.INVISIBLE);
+
                     } else if(altitude < -50){
                         ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
                         img.setImageResource(R.drawable.cockpit_bg_cracks);
@@ -149,6 +160,28 @@ public class CameraActivity extends AppCompatActivity {
 
                         View crateCarry = findViewById(R.id.crateCarry);
                         crateCarry.setVisibility(View.VISIBLE);
+
+//                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url_now, null,
+//                                new Response.Listener<JSONObject>() {
+//                                    @Override
+//                                    public void onResponse(JSONObject response) {
+//                                        try {
+//                                            // Parse JSON response and call separate generalised temperature-handler method
+//                                            int temperature = 0;
+//                                            JSONObject jsonMain = response.getJSONObject("main");
+//                                            temperature = Math.round(jsonMain.getInt("temp"));
+//                                            Log.d(LOG_TAG, "TEMPERATURE: " + temperature);
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }
+//                                }, new Response.ErrorListener() {
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//
+//                            }
+//                        });
+//                        VolleySingleton.getInstance(CameraActivity.this).addToRequestQueue(jsonObjectRequest);
 
                     }
                 });
