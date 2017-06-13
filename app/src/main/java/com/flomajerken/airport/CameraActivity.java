@@ -72,7 +72,7 @@ public class CameraActivity extends AppCompatActivity {
                         gravityMiddle = false;
                     }
 
-                    altitude = altitude - (0.2f * (sensorEvent.values[2]-1));
+                    altitude = altitude - (0.2f * (sensorEvent.values[2]-2));
                     Log.d(LOG_TAG, sensorEvent.values[2] + "");
 
 
