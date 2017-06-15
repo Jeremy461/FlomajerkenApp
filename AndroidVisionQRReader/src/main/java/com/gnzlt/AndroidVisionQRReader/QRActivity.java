@@ -3,6 +3,10 @@ package com.gnzlt.AndroidVisionQRReader;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Build;
@@ -12,6 +16,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.gnzlt.AndroidVisionQRReader.camera.CameraSourcePreview;
@@ -24,6 +30,7 @@ import java.io.IOException;
 
 public class QRActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = "flomajerken";
     public static final String EXTRA_QR_RESULT = "EXTRA_QR_RESULT";
     private static final String TAG = "QRActivity";
     private static final int PERMISSIONS_REQUEST = 100;
@@ -31,11 +38,31 @@ public class QRActivity extends AppCompatActivity {
     private BarcodeDetector mBarcodeDetector;
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
+    private SensorManager sensorManager;
+    private Sensor gravity;
+    private Sensor rotation;
+    private SensorEventListener sensorListener;
+
+    private boolean verticalDirection;
+    private boolean gravityMiddle = false;
+    private float altitude = 0;
+    private float radarRotation = 0;
+    private int mAzimuth = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qr);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        rotation = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
+
+        if(rotation == null || gravity == null){
+            Toast.makeText(this, "Your device doesn't have the required sensors for this app.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
 
         mPreview = (CameraSourcePreview) findViewById(R.id.cameraSourcePreview);
 
@@ -45,6 +72,137 @@ public class QRActivity extends AppCompatActivity {
         } else {
             requestPermission();
         }
+
+
+        sensorListener = new SensorEventListener() {
+
+            float[] orientation = new float[3];
+            float[] rMat = new float[9];
+
+            //Opvangen van sensor data
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                ImageView line = (ImageView) findViewById(R.id.line);
+
+                Log.d(LOG_TAG, "test");
+
+                if (sensorEvent.sensor.getType() == Sensor.TYPE_GRAVITY) {
+                    if(sensorEvent.values[2] > 9.5f){
+                        gravityMiddle = true;
+                    } else {
+                        gravityMiddle = false;
+                    }
+
+                    altitude = altitude - (0.2f * (sensorEvent.values[2]-2));
+//                    Log.d(LOG_TAG, sensorEvent.values[2] + "");
+
+                    if(altitude > 55){
+                        altitude = 55;
+                    } else if(altitude < -55){
+                        altitude = -55;
+                    }
+
+                    if(altitude > 50){
+                        ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
+                        img.setImageResource(R.drawable.cockpit_bg_frozen);
+                        line.setVisibility(View.INVISIBLE);
+                        View crateCarry = findViewById(R.id.crateCarry);
+                        crateCarry.setVisibility(View.INVISIBLE);
+
+                    } else if(altitude < -50){
+                        ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
+                        img.setImageResource(R.drawable.cockpit_bg_cracks);
+                        line.setVisibility(View.INVISIBLE);
+                        View crateCarry = findViewById(R.id.crateCarry);
+                        crateCarry.setVisibility(View.INVISIBLE);
+                    } else {
+                        ImageView img = (ImageView) findViewById(R.id.iv_cockpit);
+                        img.setImageResource(R.drawable.cockpit_2);
+                        line.setVisibility(View.VISIBLE);
+                    }
+
+                    View imageView = findViewById(R.id.heightIndicator);
+                    imageView.setTranslationY(-altitude);
+
+                    if(sensorEvent.values[1] > 0f){
+                        rotate((-sensorEvent.values[1] / 1.5f) * 9f, findViewById(R.id.line));
+                    }
+                    else if(sensorEvent.values[1] < 0f){
+                        rotate((-sensorEvent.values[1] / 1.5f) * 9f, findViewById(R.id.line));
+                    }
+                }
+
+                if( sensorEvent.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR ){
+                    // calculate th rotation matrix
+                    SensorManager.getRotationMatrixFromVector( rMat, sensorEvent.values );
+                    // get the azimuth value (orientation[0]) in degree
+                    mAzimuth = (int) ( Math.toDegrees( SensorManager.getOrientation( rMat, orientation )[0] ) + 360 ) % 360;
+
+                    rotate( (float) -mAzimuth, findViewById(R.id.iv_cockpit_radar_marker));
+
+                    View crate = findViewById(R.id.crate);
+
+                    if(mAzimuth >= 0 && mAzimuth <= 180) {
+                        crate.setTranslationX((-mAzimuth) * 15);
+                    } else if(mAzimuth > 180 && mAzimuth < 360) {
+                        crate.setTranslationX((mAzimuth -360) * -15);
+                    }
+
+                    if(mAzimuth >= 0 && mAzimuth <=25){
+                        if(crate.getScaleX() < 2){
+                            crate.setScaleX(crate.getScaleX()+0.001f);
+                            crate.setScaleY(crate.getScaleY()+0.001f);
+                        }
+                    }
+                    else if(mAzimuth >= 335){
+                        if(crate.getScaleX() < 2){
+                            crate.setScaleX(crate.getScaleX()+0.001f);
+                            crate.setScaleY(crate.getScaleY()+0.001f);
+                        }
+                    }
+
+//                    Log.d(LOG_TAG, crate.getTranslationX()+ "");
+//                    Log.d(LOG_TAG, mAzimuth +"");
+//                    Log.d(LOG_TAG, spawnLocation +"");
+
+                }
+
+
+
+
+//                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url_now, null,
+//                                new Response.Listener<JSONObject>() {
+//                                    @Override
+//                                    public void onResponse(JSONObject response) {
+//                                        try {
+//                                            // Parse JSON response and call separate generalised temperature-handler method
+//                                            int temperature = 0;
+//                                            JSONObject jsonMain = response.getJSONObject("main");
+//                                            temperature = Math.round(jsonMain.getInt("temp"));
+//                                            Log.d(LOG_TAG, "TEMPERATURE: " + temperature);
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }
+//                                }, new Response.ErrorListener() {
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//
+//                            }
+//                        });
+//                        VolleySingleton.getInstance(CameraActivity.this).addToRequestQueue(jsonObjectRequest);
+
+
+                rotate(-radarRotation, findViewById(R.id.iv_cockpit_radar_line));
+                rotate( (float) -mAzimuth, findViewById(R.id.iv_cockpit_radar));
+                radarRotation++;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            }
+        };
+
     }
 
     @Override
@@ -52,6 +210,8 @@ public class QRActivity extends AppCompatActivity {
         super.onResume();
         if (isPermissionGranted())
             startCameraSource();
+        sensorManager.registerListener(sensorListener, gravity, SensorManager.SENSOR_DELAY_GAME);
+        sensorManager.registerListener(sensorListener, rotation, SensorManager.SENSOR_DELAY_GAME);
     }
 
     private boolean isPermissionGranted() {
@@ -74,6 +234,11 @@ public class QRActivity extends AppCompatActivity {
                 finish();
             }
         }
+    }
+
+    /** Rotate horizontal line */
+    public void rotate(Float angle, View view){
+        view.setRotation(angle);
     }
 
     private void setupBarcodeDetector() {
@@ -149,6 +314,7 @@ public class QRActivity extends AppCompatActivity {
         if (mPreview != null) {
             mPreview.stop();
         }
+        sensorManager.unregisterListener(sensorListener);
     }
 
     @Override
