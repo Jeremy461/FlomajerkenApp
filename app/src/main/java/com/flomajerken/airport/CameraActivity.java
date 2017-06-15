@@ -2,6 +2,7 @@ package com.flomajerken.airport;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Sensor;
@@ -21,6 +22,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+
+import com.gnzlt.AndroidVisionQRReader.QRActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +52,8 @@ public class CameraActivity extends AppCompatActivity {
 
     private int mAzimuth = 0;
     private ImageView crate;
+
+    public static final int QR_REQUEST = 111;
 
     private final String url_now = "http://api.openweathermap.org/data/2.5/weather?q=Rotterdam&units=imperial&APPID=dfc773520361124b21a2723ee480b329";
 
@@ -188,6 +193,8 @@ public class CameraActivity extends AppCompatActivity {
                         View crateCarry = findViewById(R.id.crateCarry);
                         crateCarry.setVisibility(View.VISIBLE);
 
+                        requestQRCodeScan(crate);
+
 //                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url_now, null,
 //                                new Response.Listener<JSONObject>() {
 //                                    @Override
@@ -236,6 +243,26 @@ public class CameraActivity extends AppCompatActivity {
         }
     }
 
+
+    public void requestQRCodeScan(View v) {
+        Intent qrScanIntent = new Intent(this, QRActivity.class);
+        startActivityForResult(qrScanIntent, QR_REQUEST);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == QR_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                String qrData = data.getStringExtra(QRActivity.EXTRA_QR_RESULT);
+                // do something with the QR data String
+                Log.d(LOG_TAG, qrData);
+            } else {
+                //Error handler
+            }
+        }
+    }
 
 
     /** Check if this device has a camera */
