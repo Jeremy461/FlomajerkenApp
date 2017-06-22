@@ -191,32 +191,9 @@ public class CameraActivity extends AppCompatActivity {
                         radarMarker.setVisibility(View.INVISIBLE);
 
                         View crateCarry = findViewById(R.id.crateCarry);
-                        crateCarry.setVisibility(View.VISIBLE);
+                        crateCarry.setVisibility(View.INVISIBLE);
 
                         requestQRCodeScan(crate);
-
-//                        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url_now, null,
-//                                new Response.Listener<JSONObject>() {
-//                                    @Override
-//                                    public void onResponse(JSONObject response) {
-//                                        try {
-//                                            // Parse JSON response and call separate generalised temperature-handler method
-//                                            int temperature = 0;
-//                                            JSONObject jsonMain = response.getJSONObject("main");
-//                                            temperature = Math.round(jsonMain.getInt("temp"));
-//                                            Log.d(LOG_TAG, "TEMPERATURE: " + temperature);
-//                                        } catch (JSONException e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                    }
-//                                }, new Response.ErrorListener() {
-//                            @Override
-//                            public void onErrorResponse(VolleyError error) {
-//
-//                            }
-//                        });
-//                        VolleySingleton.getInstance(CameraActivity.this).addToRequestQueue(jsonObjectRequest);
-
                     }
                 });
 
@@ -246,6 +223,8 @@ public class CameraActivity extends AppCompatActivity {
 
     public void requestQRCodeScan(View v) {
         Intent qrScanIntent = new Intent(this, QRActivity.class);
+        String name = getIntent().getStringExtra("name");
+        qrScanIntent.putExtra("name", name);
         startActivityForResult(qrScanIntent, QR_REQUEST);
     }
 
@@ -297,6 +276,13 @@ public class CameraActivity extends AppCompatActivity {
 
     @Override
     protected void onResume(){
+        // Create an instance of Camera
+        mCamera = getCameraInstance();
+
+        // Create our Preview view and set it as the content of our activity.
+        mPreview = new CameraPreview(this, mCamera);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(mPreview);
         super.onResume();
         sensorManager.registerListener(sensorListener, gravity, SensorManager.SENSOR_DELAY_GAME);
         sensorManager.registerListener(sensorListener, rotation, SensorManager.SENSOR_DELAY_GAME);

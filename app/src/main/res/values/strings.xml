@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Airport</string>
-    <string name="btn_camera">Start Camera</string>
+    <string name="btn_camera"></string>
     <string name="tv_gyro">test</string>
 </resources>

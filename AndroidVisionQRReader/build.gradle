@@ -22,5 +22,6 @@ dependencies {
 
     compile 'com.android.support:appcompat-v7:23.1.+'
     compile 'com.google.android.gms:play-services-vision:8.4.+'
+    compile 'com.mcxiaoke.volley:library-aar:1.0.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }
